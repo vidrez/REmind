@@ -28,10 +28,7 @@ var call_svg;
 var call_zoom;
 
 var startTime;
-var base_url = 'http://reverse.s3.eurecom.fr:5000'
-//var base_url = 'http://193.55.114.25:5000';
-//var base_url = 'http://0.0.0.0:5000';		
-//var base_url = 'http://10.12.32.194:5000';
+var base_url = 'http://0.0.0.0:4000';		
 var renameVariablesData = {};
 
 var listOfRenamedFunctions = [];

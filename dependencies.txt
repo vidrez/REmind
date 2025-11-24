@@ -1,3 +1,7 @@
-mysql-server
+# System Dependencies
+
+gcc
+mariadb-server
 graphviz
 libgraphviz-dev
+pkg-config
