@@ -9,6 +9,7 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./mysql-conf/my_custom.cnf:/etc/mysql/conf.d/my_custom.cnf
     networks:
       - app-network
     healthcheck:
