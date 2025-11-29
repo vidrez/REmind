@@ -32,7 +32,7 @@ def create_app() -> Flask:
     db.init_app(app)
 
     # Register Blueprints
-    from . import auth, rev_webui, first_chall, fourth_chall, fifth_chall, seventh_chall
+    from . import auth, rev_webui, first_chall, fourth_chall, fifth_chall, seventh_chall, ten_chall    
 
     blueprints = [
         auth.bp,
@@ -41,6 +41,7 @@ def create_app() -> Flask:
         fourth_chall.bp,
         fifth_chall.bp,
         seventh_chall.bp,
+        ten_chall.bp,
     ]
 
     for bp in blueprints:

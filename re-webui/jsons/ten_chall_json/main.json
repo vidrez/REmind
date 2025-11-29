@@ -1,0 +1,1 @@
+{"main_edges": {"edges": [["0x401131", "0x401144"], ["0x401144", "0x401149"]]}, "main_bbs": {"0x401131": "0x401131: push rbp\n0x401132: mov rbp, rsp\n0x401135: lea rax, [rip + 0xec8]\n0x40113c: mov rdi, rax\n0x40113f: call puts\n", "0x401144": "0x401144: call secret_solution\n", "0x401149": "0x401149: mov eax, 0\n0x40114e: pop rbp\n0x40114f: ret \n"}}
