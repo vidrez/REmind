@@ -1,2 +1,4 @@
 *.env
 .ruff_cache
+app.env
+db.env
