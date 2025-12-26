@@ -20,8 +20,6 @@ Forked repository from REmind, with refactored code and new features.
 3. Run the `sql/setup_db.sh` bash script to initialize the database.
 4. Access the web interface at `http://localhost:4000`
 
-
-
 ## Updated guide for adding a challenge
 
 1. Take a binary (tested and working on compiled from C)

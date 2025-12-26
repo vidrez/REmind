@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
+
+<div class="row g-4 m-4">
+
+  <!-- Welcome Section -->
+  <div class="col-12">
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 border">
+      <div class="container-fluid py-2">
+        <h1 class="display-5 fw-bold">Welcome!</h1>
+        <p class="col-md-8 fs-4">Select an exercise below to begin your reverse engineering analysis.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <!-- Challenge Selection -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">Choose Your Exercise</h5>
+      </div>
+      <div class="list-group list-group-flush">
+        <a id="fourth_chall" href="first_chall/?function=main"
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <div>
+            <span class="fw-bold">Warmup</span>
+            <small class="d-block text-muted">Optional practice exercise</small>
+          </div>
+          <span class="badge bg-secondary rounded-pill">Trial</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Task Description -->
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Your Objective</h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">
+          Your goal is to analyze the binary and identify the specific input required to trigger a
+          <strong class="text-success">"Congratulations"</strong> or <strong class="text-success">"Success!"</strong>
+          message.
+        </p>
+        <p class="card-text">
+          Once you have found the solution, click the <strong>"Submit Solution"</strong> button located in the top-right
+          corner of the interface.
+        </p>
+
+        <hr>
+
+        <h6 class="fw-bold">Test Structure</h6>
+        <ul>
+          <li><strong>Warmup:</strong> This challenge is optional. Use it to familiarize yourself with the tool's
+            interface and features.</li>
+          <li><strong>Core Challenges:</strong> The remaining two challenges are the main part of the experiment. We
+            recommend solving them in a single, uninterrupted session.</li>
+        </ul>
+
+        <div class="alert alert-info mt-3" role="alert">
+          <h6 class="alert-heading"> Submission Format</h6>
+          <p class="mb-0 small">
+            For Test 1 and Test 2, a strict flag format is <strong>not</strong> required. You may simply provide:
+          <ul class="mb-0 small">
+            <li>A brief description (1-2 lines) of the solution.</li>
+            <li>The command line arguments that cause the function to print the success message.</li>
+          </ul>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Instructions -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">How to use the WebUI</h5>
+      </div>
+      <div class="card-body">
+        <p>This interface provides standard reverse engineering features similar to tools like IDA or Radare2.</p>
+
+        <h6 class="mt-3 text-primary">Keyboard Shortcuts</h6>
+        <div class="row g-2 text-center mb-3">
+          <div class="col-4">
+            <div class="border rounded p-2 h-100">
+              <kbd>c</kbd><br><small>Comment</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="border rounded p-2 h-100">
+              <kbd>r</kbd><br><small>Rename</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="border rounded p-2 h-100">
+              <kbd>Esc</kbd><br><small>Jump Back</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 h-100">
+              <kbd>p</kbd><br><small>Python Tool</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 h-100">
+              <kbd>n</kbd><br><small>Notes Panel</small>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="mt-3 text-primary">Navigation Tabs</h6>
+        <p class="small text-muted">
+          Access additional views using the tabs at the top of the workspace:
+        </p>
+        <ul>
+          <li><strong>Strings:</strong> View strings and their cross-references (xrefs).</li>
+          <li><strong>Callgraph:</strong> Visual representation of function calls.</li>
+          <li><strong>Functions List:</strong> View xrefs (to and from) for any selected function.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Restore user's last position if available
+  try {
+    localStorage.removeItem("myFunctionHistory");
+    const storedFunc = localStorage.getItem("function");
+    const storedAddr = localStorage.getItem("addr");
+    const lastChallId = localStorage.getItem("lastChallId");
+
+    if (lastChallId) {
+      const challElement = document.getElementById(lastChallId);
+
+      if (challElement) {
+        if (storedFunc && storedFunc !== "None") {
+          let newHref = lastChallId + "/?function=" + storedFunc;
+
+          if (storedAddr && storedAddr !== "None") {
+            newHref += "&&addr=" + storedAddr;
+          }
+          challElement.href = newHref;
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error restoring state from localStorage:", e);
+  }
+</script>
+
+{% endblock %}

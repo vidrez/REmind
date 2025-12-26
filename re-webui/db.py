@@ -1,7 +1,5 @@
 import mysql.connector
 from flask import current_app, g
-import sys
-import json
 
 
 def get_db():
@@ -35,9 +33,6 @@ def init_app(app):
     app.teardown_appcontext(close_db)
 
 
-# --- Helper Functions ---
-
-
 def read_query(db, query, params=None):
     """
     Executes a SELECT query safely using parameterized queries.
@@ -62,9 +57,6 @@ def write_query(db, query, params):
         cursor.close()
 
 
-# --- Domain Specific Queries ---
-
-
 def register_user(db, params):
     q = "INSERT INTO user (lev, token, tmp_token, solves, first_name, last_name, other) VALUES (%s, %s, %s, %s, %s, %s, %s)"
     write_query(db, q, params)
@@ -80,9 +72,9 @@ def fetch_solutions(db, params):
     return read_query(db, q, params)
 
 
-def fetch_all_users(db):
-    q = "SELECT * FROM user"
-    return read_query(db, q, None)
+def fetch_user_by_token(db, params):
+    q = "SELECT * FROM user WHERE token = %s"
+    return read_query(db, q, params)
 
 
 def update_tmp_token(db, params):

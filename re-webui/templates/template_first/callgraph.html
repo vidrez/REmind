@@ -1,16 +1,149 @@
-<!doctype html>
+{% extends 'base.html' %}
 
-<meta charset="utf-8">
-<title>Re-Mind Demo</title>
+{% block title %}Callgraph Analysis{% endblock %}
 
-<link href="{{url_for('static', filename='prism.css') }}" rel="stylesheet" />
+{% block content %}
+<!-- Stylesheets -->
 <link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
 
+<style>
+  /* Sidebar hover effects */
+  .sidebar .nav-link {
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.375rem;
+    cursor: pointer;
+  }
+  .sidebar .nav-link:hover {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-primary) !important;
+    padding-left: 1rem;
+  }
+  
+  /* Graph Container Styling */
+  .cfg-container {
+    height: calc(100vh - 140px); /* Adjust based on header/toolbar height */
+    background-color: #fff;      /* Ensure clean background for graph */
+    overflow: hidden;            /* SVG handles panning */
+    border-radius: 0.375rem;
+  }
+
+  /* Dark mode adjustment for graph container if needed */
+  [data-bs-theme="dark"] .cfg-container {
+    background-color: #2b3035;
+  }
+  
+  /* SVG Styles */
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* D3/Dagre Styling placeholders - assuming remind.css handles specific node styling */
+  .node rect {
+    stroke: #333;
+    fill: #fff;
+  }
+  .edgePath path {
+    stroke: #333;
+    fill: none;
+    stroke-width: 1.5px;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="row">
+    
+    <!-- Sidebar -->
+    <nav id="sidebarMenu" class="col-md-auto d-md-block bg-body-tertiary sidebar collapse border-end" style="min-height: calc(100vh - 56px); min-width: 220px; max-width: 400px;" onmouseover="if(typeof selected === 'function'){ selected(null); }">
+      <div class="position-sticky pt-3">
+        
+        <!-- Analysis Views Navigation -->
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted text-uppercase small fw-bold">
+          <span>Analysis Views</span>
+        </h6>
+        <ul class="nav flex-column mb-3">
+          <li class="nav-item">
+            <a class="nav-link text-body" href="{{ url_for('first_chall.info') }}">
+              Info
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-body" href="{{ url_for('first_chall.strings') }}">
+              Strings
+            </a>
+          </li>
+          <li class="nav-item">
+            <!-- Active State for Callgraph -->
+            <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold" href="{{ url_for('first_chall.callgraph') }}">
+              Callgraph
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-body" href="{{ url_for('first_chall.first_chall', function='_init') }}">
+              CFG / Disassembly
+            </a>
+          </li>
+        </ul>
+
+        <!-- Functions List (Zoom Interactions) -->
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase small fw-bold">
+          <span>Functions (Zoom)</span>
+        </h6>
+        <ul class="nav flex-column" style="max-height: 80vh; overflow-y: auto;">
+          {% for f in session.get('functions', {}) %}
+          <li class="nav-item">
+            <!-- Note: href="#" and onclick="reach(...)" to interact with D3 graph -->
+            <a class="nav-link py-1 small text-muted text-break" 
+               id="{{ f }}" 
+               href="#" 
+               onclick="reach('{{ f }}'); return false;"
+               title="{{ session['functions'][f] }}">
+              {{ session['functions'][f] }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col ms-sm-auto px-md-4">
+      
+      <!-- Toolbar Header -->
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Call Graph Analysis</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="{{ url_for('rev_webui.index') }}" class="btn btn-sm btn-outline-secondary">
+               Pause
+            </a>
+            <a href="{{ url_for('first_chall.confirm_solution') }}" class="btn btn-sm btn-outline-success">
+               Submit Solution
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph Visualization Area -->
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-1">
+          <div class="cfg-container border rounded bg-light">
+            <svg id="callgraph-svg">
+               <g transform="translate(20,20)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+</div>
+
+<!-- D3 & Graph Libraries -->
 <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script src="{{url_for('static', filename='node_modules/dagre-d3/dist/dagre-d3.js') }}"></script>
 
-
-<!-- jQuery -->
+<!-- jQuery & Plugins -->
 <script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.min.js') }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.scrollTo.min.js' ) }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.layout-latest.min.js' ) }}"></script>
@@ -18,176 +151,120 @@
 <script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.ui-contextmenu.min.js' ) }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.onoff.min.js' ) }}"></script>
 
+<!-- Context Menu -->
+<script src="{{ url_for('static', filename = 'menu.js-master/dist/menu.js') }}"></script>
 
-<!-- my scripts -->
-	<script type="text/javascript" src="{{ url_for('static', filename = 'globalVariables.js') }}"></script>
-
+<!-- Custom Scripts -->
+<script type="text/javascript" src="{{ url_for('static', filename = 'globalVariables.js') }}"></script>
 <script>
-		current_chall = 'first_chall';
+  // Set global challenge identifier
+  current_chall = 'first_chall';
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'requestsUtils.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'utils.js') }}"></script>
 
-<style>
-
-
-.cfgbutton {
-    background-color: transparent;
-    background:url("{{url_for('static', filename='./gear.png')}}") no-repeat;
-    border: none;
-    cursor: pointer;
-    height: 50px;
-    padding-left: 50px;
-    vertical-align: middle;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {background-color: #414141; color:white;}
-.dropdown:hover .dropdown-content {display: block;}
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
-
-
-</style>
-
-<body>
-
-  <div class="sidenav" onmouseover="selected(null);">
-   <div class="dropdown">
-      &nbsp;&#9776;&nbsp;Functions
-      <div class="dropdown-content" style="left: 10px;">
-       <a href="{{ url_for('first_chall.info') }}">Info</a>
-       <a href="{{ url_for('first_chall.strings') }}">Strings</a>
-       <a href="{{ url_for('first_chall.callgraph') }}">Callgraph</a>
-          <a href="/first_chall/?function=_init">[ CFG ]</a>
-    </div>
-   </div>
-
-   <br/><br/>
-      {% for f in session['functions'] %}
-   <a id="{{ f }}" href="#" onclick="reach('{{ f }}')">{{ session['functions'][f] }}</a>
-      {% endfor %}
-
-  </div>
-
-  <div class="dropdown" style="float:right;">
-      <button class="cfgbutton"></button>
-      <div class="dropdown-content">
-       <a href="{{ url_for('rev_webui.index') }}">Pause</a>
-       <a href="#">Submit Solution</a>
-          <a href="{{ url_for('auth.logout') }}">Logout</a>
-  </div>
-  </div>
-
-  <div class="mainw">
-      <br/>
-<hr style="height:2px;border:none;color:#333;background-color:#333;" />
-  <br/>
-
-  <div class="cfg">
-     <svg>
-
-     </svg>
-  </div>
-  </div>
-
-</body>
-
-
+<!-- Graph Logic -->
 <script id="js">
-
-function getAddressByFunctionName(name) {
-    for(var i in callgraph) {
-        if(name == callgraph[i]["label"]) {
-            return i;
-        }
+  // Function to find address by name in the loaded callgraph data
+  function getAddressByFunctionName(name) {
+    // Check if callgraph global exists
+    if (typeof callgraph === 'undefined') return 0;
+    
+    for (var i in callgraph) {
+      if (name == callgraph[i]["label"]) {
+        return i;
+      }
     }
     return 0;
-}
+  }
 
-function reach(funcName){
- var name = getAddressByFunctionName(funcName);
- if (name == 0) {
-    return;
- }
- rect = call_g._nodes[name].elem.firstChild;
- rect.style["strokeWidth"]="12.5px";
- rect.style["stroke"]="#b33";
- x = call_g._nodes[name].x;
- y = call_g._nodes[name].y;
- z = d3.zoomTransform(d3.select("svg").node()).k
- d3.select('svg').transition().duration(400).call( call_zoom.transform, d3.zoomIdentity.translate(-1*x+200,-1*y+200).scale(1) );
-}
+  // Function to zoom/pan to a specific node
+  function reach(funcName) {
+    var name = getAddressByFunctionName(funcName);
+    if (name == 0) {
+      console.warn("Function not found in graph:", funcName);
+      return;
+    }
+    
+    // Ensure call_g (graph object) exists
+    if (typeof call_g === 'undefined' || !call_g._nodes[name]) return;
 
-function sr(r){
-  window.selected_reg = r;
-  emphasize_reg();
-  Prism.highlightAll();
-}
+    var rect = call_g._nodes[name].elem.firstChild;
+    
+    // reset previous highlights if necessary here
+    
+    // Highlight styling
+    rect.style["strokeWidth"] = "4px"; // Reduced slightly from 12.5px for cleaner look
+    rect.style["stroke"] = "#dc3545"; // Bootstrap danger color for visibility
+    
+    var x = call_g._nodes[name].x;
+    var y = call_g._nodes[name].y;
+    
+    // Calculate zoom transform
+    // Note: Adjust translation based on container center
+    var svg = d3.select("svg");
+    var width = svg.node().getBoundingClientRect().width;
+    var height = svg.node().getBoundingClientRect().height;
+    
+    d3.select('svg').transition().duration(750).call(
+      call_zoom.transform, 
+      d3.zoomIdentity.translate(-x + width/2, -y + height/2).scale(1)
+    );
+  }
 
+  // Functions referenced but maybe unused in this specific view, kept for compatibility
+  function sr(r) {
+    window.selected_reg = r;
+    emphasize_reg();
+    if(typeof Prism !== 'undefined') Prism.highlightAll();
+  }
 
-function emphasize_reg() {
+  function emphasize_reg() {
     var list = document.getElementsByTagName("code");
+    if(typeof cfg === 'undefined') return;
+
     for (let i = 0; i < list.length; i++) {
       var value = cfg[list[i].id];
+      if(!value) continue;
+
       var tmp = value.asm.split('\n');
       var tmp2 = value.obfuscated.split('\n');
       new_value = ""
-      for (let i = 0; i < tmp.length; i++) {
-         if (tmp[i].includes(window.selected_reg)){
-           new_value += tmp[i] + '\n';
-         }
-         else{
-           new_value += tmp2[i] + '\n';
-         }
+      for (let j = 0; j < tmp.length; j++) {
+        if (tmp[j].includes(window.selected_reg)) {
+          new_value += tmp[j] + '\n';
+        }
+        else {
+          new_value += tmp2[j] + '\n';
+        }
       }
       list[i].textContent = new_value;
     }
 
-   window.focused_bb.textContent = cfg[window.focused_bb.id].asm;
-   Prism.highlightElement(window.focused_bb);
-}
-
-
-class Function {
-  constructor(address, name, nodes, edges){
-     this.address = address;
-     this.name    = name;
-     this.nodes   = nodes;
-     this.edges   = edges;
+    if(window.focused_bb && cfg[window.focused_bb.id]) {
+        window.focused_bb.textContent = cfg[window.focused_bb.id].asm;
+        Prism.highlightElement(window.focused_bb);
+    }
   }
-}
 
+  class Function {
+    constructor(address, name, nodes, edges) {
+      this.address = address;
+      this.name = name;
+      this.nodes = nodes;
+      this.edges = edges;
+    }
+  }
 
-
-downloadCallGraph();
-
-
-
-
-
+  // Initialize graph download
+  // Ensure this function exists in your utils.js or requestsUtils.js
+  if (typeof downloadCallGraph === 'function') {
+      downloadCallGraph();
+  } else {
+      console.error("downloadCallGraph function is missing. Check utils.js includes.");
+  }
 </script>
 
 <script src="{{ url_for('static', filename='prism2.js')}}"></script>
 
-</html>
+{% endblock %}

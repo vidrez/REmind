@@ -13,7 +13,6 @@ def get_general_config():
 
     config_dict["experiment_mode"] = config["DEFAULT"].getint("experiment_mode")
     config_dict["challs"] = config["DEFAULT"].getint("challs")
-    config_dict["admins"] = config["DEFAULT"]["admin"].split(";")
     return config_dict
 
 

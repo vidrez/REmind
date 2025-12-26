@@ -1,12 +1,15 @@
 import os
 from flask import Flask
 from flask_cors import CORS
+from livereload import Server
 
 
 def create_app() -> Flask:
     """Application Factory to configure and create the Flask app."""
 
     app = Flask(__name__, instance_relative_config=True)
+    app.debug = True
+    server = Server(app.wsgi_app)
 
     app.config.from_mapping(
         SECRET_KEY=os.getenv("SECRET_KEY", "dev"),
@@ -32,21 +35,23 @@ def create_app() -> Flask:
     db.init_app(app)
 
     # Register Blueprints
-    from . import auth, rev_webui, first_chall, fourth_chall, fifth_chall, seventh_chall, ten_chall    
+    from . import (
+        auth,
+        rev_webui,
+        first_chall,
+    )
 
     blueprints = [
         auth.bp,
         rev_webui.bp,
         first_chall.bp,
-        fourth_chall.bp,
-        fifth_chall.bp,
-        seventh_chall.bp,
-        ten_chall.bp,
     ]
 
     for bp in blueprints:
         app.register_blueprint(bp)
 
     app.add_url_rule("/", endpoint="index")
+
+    server.serve(host="0.0.0.0", port=4000)
 
     return app

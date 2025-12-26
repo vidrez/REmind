@@ -1,1 +1,0 @@
-{"sub_401020_edges": {"edges": []}, "sub_401020_bbs": {"0x401020": "0x401020: push qword ptr [rip + 0x2fca]\n0x401026: jmp qword ptr [rip + 0x2fcc]\n"}}
