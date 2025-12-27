@@ -44,7 +44,10 @@
 
     /* --- PREVENT TEXT SELECTION --- */
     /* Make code and addresses non-selectable as requested */
-    pre, code, .token.generic, svg text {
+    pre,
+    code,
+    .token.generic,
+    svg text {
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -97,15 +100,20 @@
     /* Code Container & Copy Button Styles */
     .code-container {
         position: relative;
-        display: block; /* Ensure it wraps the block code properly */
+        display: block;
+        font-size: 95%;
+        overflow: hidden;
+        /* Ensure it wraps the block code properly */
     }
 
     .copy-btn {
         position: absolute;
-        top: 2px;
-        right: 15px;
-        width: 20px; /* Slightly smaller button */
-        height: 20px; /* Slightly smaller button */
+        top: 0px;
+        right: 5px;
+        width: 20px;
+        /* Slightly smaller button */
+        height: 20px;
+        /* Slightly smaller button */
         padding: 0;
         border: 1px solid rgba(var(--bs-body-color-rgb), 0.2);
         border-radius: 4px;
@@ -115,10 +123,11 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        opacity: 0.6;
+        opacity: 0.5;
         transition: all 0.2s;
         z-index: 100;
-        user-select: auto; /* Ensure the button itself is interactive */
+        user-select: auto;
+        /* Ensure the button itself is interactive */
     }
 
     /* Constrain the icon size explicitly to prevent clipping */
@@ -133,7 +142,7 @@
         background: var(--bs-primary);
         color: white;
         transform: scale(1.1);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     /* Editor Styles */
@@ -147,11 +156,13 @@
         border: 1px solid #444;
         padding: 10px;
         resize: none;
-        user-select: auto; /* Allow selection in the editor */
+        user-select: auto;
+        /* Allow selection in the editor */
     }
 
     #notes_area {
-        user-select: auto; /* Allow selection in the notes */
+        user-select: auto;
+        /* Allow selection in the notes */
     }
 
     .output-pre {
@@ -176,22 +187,28 @@
             <div class="position-sticky pt-3">
 
                 <!-- Analysis Views Navigation -->
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted text-uppercase small fw-bold">
+                <h6
+                    class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted text-uppercase small fw-bold">
                     <span>Analysis Views</span>
                 </h6>
                 <ul class="nav flex-column mb-3">
-                    <li class="nav-item"><a class="nav-link text-body" href="{{ url_for('first_chall.info') }}">Info</a></li>
-                    <li class="nav-item"><a class="nav-link text-body" href="{{ url_for('first_chall.strings') }}">Strings</a></li>
-                    <li class="nav-item"><a class="nav-link text-body" href="{{ url_for('first_chall.callgraph') }}">Callgraph</a></li>
+                    <li class="nav-item"><a class="nav-link text-body" href="{{ url_for('first_chall.info') }}">Info</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-body"
+                            href="{{ url_for('first_chall.strings') }}">Strings</a></li>
+                    <li class="nav-item"><a class="nav-link text-body"
+                            href="{{ url_for('first_chall.callgraph') }}">Callgraph</a></li>
                     <li class="nav-item">
-                        <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold" href="{{ url_for('first_chall.first_chall', function='_init') }}">
+                        <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold"
+                            href="{{ url_for('first_chall.first_chall', function='_init') }}">
                             CFG / Disassembly
                         </a>
                     </li>
                 </ul>
 
                 <!-- Functions List -->
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase small fw-bold">
+                <h6
+                    class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase small fw-bold">
                     <span>Functions</span>
                 </h6>
                 <ul class="nav flex-column" style="max-height: 80vh; overflow-y: auto;">
@@ -212,7 +229,8 @@
         <!-- Main Content -->
         <main class="col ms-sm-auto px-md-4">
             <!-- Toolbar Header -->
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">
                     Control Flow Graph
                     <small class="text-muted fs-6 ms-2">({{ session.get('function_name', 'Unknown') }})</small>
@@ -220,12 +238,16 @@
 
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group me-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#pythonOffcanvas"> Python</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#notesOffcanvas" onclick="downloadNotes()"> Notes</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas"
+                            data-bs-target="#pythonOffcanvas"> Python</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas"
+                            data-bs-target="#notesOffcanvas" onclick="downloadNotes()"> Notes</button>
                     </div>
                     <div class="btn-group">
-                        <a href="{{ url_for('rev_webui.index') }}" class="btn btn-sm btn-outline-secondary" onclick="if(typeof on_pause === 'function') on_pause()"> Pause</a>
-                        <a href="{{ url_for('first_chall.confirm_solution') }}" class="btn btn-sm btn-outline-success" onclick="if(typeof on_pause === 'function') on_pause()"> Submit</a>
+                        <a href="{{ url_for('rev_webui.index') }}" class="btn btn-sm btn-outline-secondary"
+                            onclick="if(typeof on_pause === 'function') on_pause()"> Pause</a>
+                        <a href="{{ url_for('first_chall.confirm_solution') }}" class="btn btn-sm btn-outline-success"
+                            onclick="if(typeof on_pause === 'function') on_pause()"> Submit</a>
                     </div>
                 </div>
             </div>
@@ -245,8 +267,9 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body bg-dark text-light">
-        <textarea id="yourcode" class="editor-textarea mb-2" spellcheck="false"># Write here your python code snippets!</textarea>
-        <button type="button" class="btn btn-success w-100 fw-bold font-monospace" onclick="runit()">Run Code</button>
+        <textarea id="yourcode" class="editor-textarea mb-2"
+            spellcheck="false"># Write here your python code snippets!</textarea>
+        <button type="button" class="btn btn-success w-100 fw-bold font-monospace" onclick="run_py()">Run Code</button>
         <pre id="output" class="output-pre">Ready...</pre>
     </div>
 </div>
@@ -258,7 +281,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column">
-        <textarea id="notes_area" class="form-control flex-grow-1 mb-3 font-monospace" style="resize: none;" spellcheck="false" placeholder="Type your observations here..."></textarea>
+        <textarea id="notes_area" class="form-control flex-grow-1 mb-3 font-monospace" style="resize: none;"
+            spellcheck="false" placeholder="Type your observations here..."></textarea>
         <button type="button" class="btn btn-primary w-100" onclick="storeit()"> Save Notes</button>
     </div>
 </div>
@@ -267,52 +291,54 @@
 
 {% block scripts %}
 <!-- Core Libraries -->
-<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-<script src="{{url_for('static', filename='node_modules/dagre-d3/dist/dagre-d3.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./d3.v4.min.js') }}" charset="utf-8"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./dagre-d3.min.js') }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='./skulpt.min.js') }}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='./skulpt-stdlib.js') }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.min.js') }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.scrollTo.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.layout-latest.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery-ui.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.ui-contextmenu.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.onoff.min.js' ) }}"></script>
-<script src="{{ url_for('static', filename = 'menu.js-master/dist/menu.js') }}"></script>
-
 <script type="text/javascript" src="{{ url_for('static', filename = 'globalVariables.js') }}"></script>
-<script>current_chall = 'first_chall';</script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'requestsUtils.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'utils.js') }}"></script>
-
-{% if session['obfuscation_1'] %}
 <script>
+    const current_chall = "first_chall";
     function obfuscate(id) {
         if (typeof spanIds === 'undefined') return;
-        for (var index in spanIds) { $('span#' + spanIds[index] + '.token.generic').css('filter', 'blur(8px)') }
+
+        // 1. Blur all generic spans that were previously unblurred
+        spanIds.forEach(spanId => {
+            const spans = document.querySelectorAll(`span[id="${spanId}"].token.generic`);
+            spans.forEach(s => s.style.filter = 'blur(8px)');
+        });
+
         localStorage.setItem("addr", id);
-        $("code#" + id + " span.token.generic").css("filter", "");
-        $('.token.generic').css("background", "");
+
+        // 2. Unblur generic tokens within the current basic block (ID)
+        // We use the attribute selector [id="..."] to handle IDs starting with 0x (digits)
+        const currentBlockTokens = document.querySelectorAll(`code[id="${id}"] span.token.generic`);
+        currentBlockTokens.forEach(token => {
+            token.style.filter = 'none';
+        });
+
+        // 3. Reset background color for all generic tokens
+        const allGenericTokens = document.querySelectorAll('.token.generic');
+        allGenericTokens.forEach(token => {
+            token.style.background = "";
+        });
+
+        // Reset the tracker for unblurred spans
         spanIds = [];
-        if (typeof previousBBid !== 'undefined' && previousBBid != 0 && previousBBid != id) {
-            $("code#" + previousBBid + " span.token.generic").css("filter", "blur(8px)");
+
+        // 4. If we are moving to a new block, ensure the previous one is blurred
+        if (typeof previousBBid !== 'undefined' && previousBBid != 0 && previousBBid !== id) {
+            const prevBlockTokens = document.querySelectorAll(`code[id="${previousBBid}"] span.token.generic`);
+            prevBlockTokens.forEach(token => {
+                token.style.filter = 'blur(8px)';
+            });
         }
+
         previousBBid = id;
     }
 </script>
 <script src="{{ url_for('static', filename='prism2.js')}}"></script>
-{% else %}
-<script>
-    function obfuscate(id) {
-        localStorage.setItem("addr", id);
-        $("code#" + id + " span.token.generic").css("filter", "");
-        $('.token.generic').css("background", "");
-        if (typeof previousBBid !== 'undefined') previousBBid = id;
-    }
-</script>
-<script src="{{ url_for('static', filename='prism2_no_obfuscation.js')}}"></script>
-{% endif %}
-
-<script type="text/javascript" src="{{url_for('static', filename='./jqueryEventsUtils.js' )}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./eventUtils.js' )}}"></script>
 
 <script id="js">
     localStorage.setItem("lastChallId", "first_chall");
@@ -341,7 +367,16 @@
 
     function storeit() {
         var note = document.getElementById("notes_area").value;
-        $.post(base_url + "/first_chall/storeNotes", data = { 'token': id, 'notes': note });
+        fetch(`${base_url}/first_chall/storeNotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'token': id,
+                'notes': note
+            })
+        }).catch(error => console.error('Error saving notes:', error));
         alert("Your notes have been saved!");
     }
 
@@ -356,7 +391,7 @@
         return Sk.builtinFiles["files"][x];
     }
 
-    function runit() {
+    function run_py() {
         var prog = document.getElementById("yourcode").value;
         var mypre = document.getElementById("output");
         mypre.innerHTML = '';
@@ -369,37 +404,25 @@
             function (err) { mypre.innerHTML = mypre.innerHTML + '\n' + err.toString(); });
     }
 
-    function sr(r) {
-        window.selected_reg = r;
-        emphasize_reg();
-        if (typeof Prism !== 'undefined') Prism.highlightAll();
-    }
+    async function downloadNotes() {
+        const url = `${base_url}/${current_chall}/downloadNotes`;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ 'token': id })
+            });
 
-    function emphasize_reg() {
-        if (typeof cfg === 'undefined') return;
-        var list = document.getElementsByTagName("code");
-        for (let i = 0; i < list.length; i++) {
-            var value = cfg[list[i].id];
-            if (!value) continue;
-            var tmp = value.asm.split('\n');
-            var tmp2 = value.obfuscated.split('\n');
-            var new_value = "";
-            for (let j = 0; j < tmp.length; j++) {
-                if (tmp[j].includes(window.selected_reg)) new_value += tmp[j] + '\n';
-                else new_value += tmp2[j] + '\n';
+            if (!response.ok) return;
+
+            const data = await response.text();
+            const noteArea = document.getElementById("notes_area");
+            if (noteArea) {
+                noteArea.value = data;
             }
-            list[i].textContent = new_value;
+        } catch (error) {
+            console.error('Error downloading notes:', error);
         }
-        if (window.focused_bb && cfg[window.focused_bb.id]) {
-            window.focused_bb.textContent = cfg[window.focused_bb.id].asm;
-            Prism.highlightElement(window.focused_bb);
-        }
-    }
-
-    function downloadNotes() {
-        $.post(base_url + "/first_chall/downloadNotes", data = { 'token': id }, function (data) {
-            document.getElementById("notes_area").value = data;
-        });
     }
 
     function copyToClipboard(text) {
@@ -422,14 +445,14 @@
     function addCopyButtons() {
         // Target all code blocks including those inside the CFG graph
         const blocks = document.querySelectorAll("pre code, .node foreignObject code");
-        
+
         blocks.forEach(code => {
             // Avoid duplicate buttons
             if (code.parentNode.classList.contains("code-container")) return;
 
             const wrapper = document.createElement("div");
             wrapper.classList.add("code-container");
-            
+
             // Adjust insertion point
             code.parentNode.insertBefore(wrapper, code);
             wrapper.appendChild(code);
@@ -444,7 +467,7 @@
                 // Prevent D3 zoom/pan from triggering when clicking the copy button
                 e.stopPropagation();
                 e.preventDefault();
-                
+
                 copyToClipboard(code.innerText).then(() => {
                     btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>';
                 });
@@ -455,16 +478,13 @@
     // Monitor DOM for new nodes being added to the graph
     const observer = new MutationObserver(addCopyButtons);
     observer.observe(document.body, { childList: true, subtree: true });
-    
-    // Initial call and periodic check to handle initial graph rendering
-    addCopyButtons();
-    setTimeout(addCopyButtons, 1000);
 
     // Context Menu & Key Handlers
-    document.onkeydown = function (evt) {
-        if (document.activeElement.id == 'yourcode' || document.activeElement.id == 'notes_area') return;
-        evt = evt || window.event;
-        var isEscape = (evt.key == "Escape" || evt.key == "Esc" || evt.keyCode == 27);
+    document.addEventListener('keydown', (evt) => {
+        // Prevent shortcuts if typing in editors or notes
+        if (document.activeElement.id === 'yourcode' || document.activeElement.id === 'notes_area') return;
+
+        const isEscape = (evt.key === "Escape" || evt.key === "Esc" || evt.keyCode === 27);
         if (isEscape) {
             if (typeof myHistory !== 'undefined' && myHistory) {
                 scrollToAddress(myHistory, scrollEventsEnum.ESC);
@@ -474,37 +494,73 @@
             }
             if (localStorage.getItem("myFunctionHistory") != 0) {
                 relocate = 1;
-                setTimeout(function() {
-                   if (typeof change_page === 'function') change_page();
+                setTimeout(() => {
+                    if (typeof change_page === 'function') change_page();
                 }, 50);
                 return;
             }
             window.selected_reg = 'x_x_x';
         }
-        if (evt.key == 'c' && typeof eip !== 'undefined') {
-            var codeId = getBBbyAddress(eip);
-            cfg_comment(codeId, exEipElement[0]);
-        }
-        if (evt.key == 'r' && typeof exEipElement !== 'undefined') {
-            var cid = exEipElement.children()[0].id;
-            var elemToRename = null;
-            $('span#' + cid + '.token.generic').each(function () {
-                if ($(this).parent()[0].className == "token local") { elemToRename = $(this)[0]; return false; }
-            });
-            if (elemToRename) rename(elemToRename);
-            else {
-                var callToken = $('span#' + cid + '.token.generic:contains("call")');
-                if (callToken.length > 0) rename_func(cid);
-                else alert("Nothing to rename here.");
+
+        // Comment shortcut
+        if (evt.key === 'c' && typeof eip !== 'undefined') {
+            const codeId = typeof getBBbyAddress === 'function' ? getBBbyAddress(eip) : null;
+            if (codeId && typeof exEipElement !== 'undefined' && exEipElement) {
+                // Native DOM: Removed [0]
+                if (typeof cfg_comment === 'function') {
+                    cfg_comment(codeId, exEipElement);
+                    setTimeout(() => {
+                        if (typeof obfuscate === 'function') obfuscate(codeId);
+                    }, 100);
+                }
             }
         }
-        if (evt.key == 'p') bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('pythonOffcanvas')).toggle();
-        if (evt.key == 'n') {
-            var noteEl = document.getElementById('notesOffcanvas');
-            if (!noteEl.classList.contains('show')) downloadNotes();
-            bootstrap.Offcanvas.getOrCreateInstance(noteEl).toggle();
+
+        // Rename shortcut
+        if (evt.key === 'r' && typeof exEipElement !== 'undefined' && exEipElement) {
+            // Native DOM: children[0] instead of children()[0]
+            const firstChild = exEipElement.children[0];
+            if (!firstChild) return;
+
+            const cid = firstChild.id;
+            let elemToRename = null;
+
+            const genericSpans = document.querySelectorAll(`span[id="${cid}"].token.generic`);
+            genericSpans.forEach(span => {
+                if (span.parentElement && span.parentElement.classList.contains("local")) {
+                    elemToRename = span;
+                }
+            });
+
+            if (elemToRename) {
+                if (typeof rename === 'function') rename(elemToRename);
+            } else {
+                // Native replacement for :contains("call")
+                if (exEipElement.textContent.includes("call")) {
+                    if (typeof rename_func === 'function') rename_func(cid);
+                } else {
+                    alert("Nothing to rename here.");
+                }
+            }
         }
-    };
+
+        // Toggle Python Interpreter
+        if (evt.key === 'p') {
+            const pyOffcanvas = document.getElementById('pythonOffcanvas');
+            if (pyOffcanvas) bootstrap.Offcanvas.getOrCreateInstance(pyOffcanvas).toggle();
+        }
+
+        // Toggle Notes Panel
+        if (evt.key === 'n') {
+            const noteEl = document.getElementById('notesOffcanvas');
+            if (noteEl) {
+                if (!noteEl.classList.contains('show') && typeof downloadNotes === 'function') {
+                    downloadNotes();
+                }
+                bootstrap.Offcanvas.getOrCreateInstance(noteEl).toggle();
+            }
+        }
+    });
 
     if (typeof downloadCFG === 'function') downloadCFG(func_to_download);
 </script>

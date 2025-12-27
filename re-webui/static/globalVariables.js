@@ -28,25 +28,23 @@ var call_svg;
 var call_zoom;
 
 var startTime;
-var base_url = 'http://0.0.0.0:4000';		
+var base_url = 'http://0.0.0.0:4000';
 var renameVariablesData = {};
 
 var listOfRenamedFunctions = [];
 var listOfRenamedVariables = [];
 
 var scrollEventsEnum = {
-    FOLLOW : 1,
+    FOLLOW: 1,
     JUMPTO: 2,
     CLICK: 3,
     ESC: 4,
     STR_XREF: 5,
     properties: {
-        1 : {name: 'follow', value: 1},
-        2 : {name: 'jumpto', value: 2},
-        3 : {name: 'click', value: 3},
-        4 : {name: 'esc', value: 4},
-        5 : {name: 'str_xref', value: 5}
+        1: { name: 'follow', value: 1 },
+        2: { name: 'jumpto', value: 2 },
+        3: { name: 'click', value: 3 },
+        4: { name: 'esc', value: 4 },
+        5: { name: 'str_xref', value: 5 }
     }
 }
-
-current_chall = '';

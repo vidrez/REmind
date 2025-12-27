@@ -92,7 +92,6 @@
         <ul class="nav flex-column" style="max-height: 80vh; overflow-y: auto;">
           {% for f in session.get('functions', {}) %}
           <li class="nav-item">
-            <!-- Note: href="#" and onclick="reach(...)" to interact with D3 graph -->
             <a class="nav-link py-1 small text-muted text-break" 
                id="{{ f }}" 
                href="#" 
@@ -140,31 +139,16 @@
 </div>
 
 <!-- D3 & Graph Libraries -->
-<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-<script src="{{url_for('static', filename='node_modules/dagre-d3/dist/dagre-d3.js') }}"></script>
-
-<!-- jQuery & Plugins -->
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.min.js') }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.scrollTo.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.layout-latest.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery-ui.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.ui-contextmenu.min.js' ) }}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='./vendors/jquery.onoff.min.js' ) }}"></script>
-
-<!-- Context Menu -->
-<script src="{{ url_for('static', filename = 'menu.js-master/dist/menu.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./d3.v4.min.js') }}" charset="utf-8"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./dagre-d3.min.js') }}"></script>
 
 <!-- Custom Scripts -->
 <script type="text/javascript" src="{{ url_for('static', filename = 'globalVariables.js') }}"></script>
-<script>
-  // Set global challenge identifier
-  current_chall = 'first_chall';
-</script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'requestsUtils.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'utils.js') }}"></script>
 
 <!-- Graph Logic -->
 <script id="js">
+  const current_chall = "first_chall"
   // Function to find address by name in the loaded callgraph data
   function getAddressByFunctionName(name) {
     // Check if callgraph global exists
@@ -212,59 +196,12 @@
     );
   }
 
-  // Functions referenced but maybe unused in this specific view, kept for compatibility
-  function sr(r) {
-    window.selected_reg = r;
-    emphasize_reg();
-    if(typeof Prism !== 'undefined') Prism.highlightAll();
-  }
-
-  function emphasize_reg() {
-    var list = document.getElementsByTagName("code");
-    if(typeof cfg === 'undefined') return;
-
-    for (let i = 0; i < list.length; i++) {
-      var value = cfg[list[i].id];
-      if(!value) continue;
-
-      var tmp = value.asm.split('\n');
-      var tmp2 = value.obfuscated.split('\n');
-      new_value = ""
-      for (let j = 0; j < tmp.length; j++) {
-        if (tmp[j].includes(window.selected_reg)) {
-          new_value += tmp[j] + '\n';
-        }
-        else {
-          new_value += tmp2[j] + '\n';
-        }
-      }
-      list[i].textContent = new_value;
-    }
-
-    if(window.focused_bb && cfg[window.focused_bb.id]) {
-        window.focused_bb.textContent = cfg[window.focused_bb.id].asm;
-        Prism.highlightElement(window.focused_bb);
-    }
-  }
-
-  class Function {
-    constructor(address, name, nodes, edges) {
-      this.address = address;
-      this.name = name;
-      this.nodes = nodes;
-      this.edges = edges;
-    }
-  }
-
   // Initialize graph download
-  // Ensure this function exists in your utils.js or requestsUtils.js
   if (typeof downloadCallGraph === 'function') {
       downloadCallGraph();
   } else {
       console.error("downloadCallGraph function is missing. Check utils.js includes.");
   }
 </script>
-
-<script src="{{ url_for('static', filename='prism2.js')}}"></script>
 
 {% endblock %}
