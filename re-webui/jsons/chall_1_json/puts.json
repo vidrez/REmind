@@ -1,1 +1,1 @@
-{"puts_bbs": {"0x400960": "0x400960: jmp qword ptr [rip + 0x2015f2]\n"}, "puts_edges": {"edges": []}}
+{"puts_bbs": {"0x400580": "0x400580: jmp qword ptr [rip + 0x200a3a]\n"}, "puts_edges": {"edges": []}}

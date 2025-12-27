@@ -19,7 +19,7 @@ from .auth import login_required
 bp = Blueprint("rev_webui", __name__, template_folder="templates/general/")
 
 CONFIG = get_general_config()
-NUM_CHALLENGES = CONFIG["challs"]
+NUM_CHALLENGES = CONFIG["challs"] + 1  # Challenges are 1-indexed
 EXPERIMENT_MODE = CONFIG["experiment_mode"]
 
 # Index in the user tuple representing the 'solves' column

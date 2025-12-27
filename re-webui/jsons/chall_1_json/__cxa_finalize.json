@@ -1,1 +1,1 @@
-{"__cxa_finalize_bbs": {"0x400a60": "0x400a60: jmp qword ptr [rip + 0x201592]\n"}, "__cxa_finalize_edges": {"edges": []}}
+{"__cxa_finalize_bbs": {"0x4005b0": "0x4005b0: jmp qword ptr [rip + 0x200a42]\n"}, "__cxa_finalize_edges": {"edges": []}}
