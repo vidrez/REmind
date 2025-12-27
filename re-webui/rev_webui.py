@@ -6,10 +6,13 @@ from flask import (
     render_template,
     request,
     session,
+    flash,
+    url_for,
+    redirect,
 )
 
-from .db import get_db, write_query, read_query
-from .config import get_general_config
+from .db import get_db, read_query, fetch_solutions
+from .config import get_general_config, get_chall_config
 from .auth import login_required
 
 # -- Configuration & Constants --
@@ -46,20 +49,54 @@ def get_submitted_solutions_map(db, user_id: int) -> dict:
 
 
 def _handle_solution_submission(db, user_id: int):
-    """Processes the POST request for submitting a solution."""
-    solution_text = request.form["solution"]
-
-    payload = {"timestamp": get_timestamp(), "solution": solution_text}
-    solution_json = json.dumps(payload)
+    """
+    Processes the POST request for submitting a solution.
+    Validates against config.ini, ensures only one solution exists per user
+    per challenge (Upsert logic), and provides feedback via flash messages.
+    """
+    solution_text = request.form.get("solution", "").strip()
+    if not solution_text:
+        flash("Submission failed: Solution field cannot be empty.", "danger")
+        return False
 
     # Default to challenge 1 if not set in session
     challenge_num = session.get("challenge_num", 1)
 
-    write_query(
-        db,
-        "INSERT INTO solutions (user_id, challenge, solution) VALUES (%s, %s, %s)",
-        (user_id, challenge_num, solution_json),
-    )
+    chall_config = get_chall_config(challenge_num)
+    correct_solution = chall_config.get("solution")
+
+    if solution_text != correct_solution:
+        return False
+
+    payload = {"timestamp": get_timestamp(), "solution": solution_text}
+    solution_json = json.dumps(payload)
+
+    existing_solutions = fetch_solutions(db, (user_id,))
+    # Solution record structure: (id, user_id, challenge, solution)
+    exists = any(int(sol[2]) == int(challenge_num) for sol in existing_solutions)
+
+    try:
+        cursor = db.cursor()
+        if exists:
+            cursor.execute(
+                "UPDATE solutions SET solution = %s WHERE user_id = %s AND challenge = %s",
+                (solution_json, user_id, challenge_num),
+            )
+        else:
+            cursor.execute(
+                "INSERT INTO solutions (user_id, challenge, solution) VALUES (%s, %s, %s)",
+                (user_id, challenge_num, solution_json),
+            )
+
+        db.commit()
+        cursor.close()
+
+        return True
+
+    except Exception as _e:
+        flash("An error occurred: your solution was not saved", "danger")
+
+    return False
 
 
 # -- Routes --
@@ -85,9 +122,6 @@ def index():
     db = get_db()
     user_id = session.get("user_id")
 
-    if request.method == "POST":
-        _handle_solution_submission(db, user_id)
-
     solved_records = read_query(
         db, "SELECT * FROM solutions WHERE user_id = %s GROUP BY challenge", (user_id,)
     )
@@ -97,6 +131,20 @@ def index():
     session["status_solutions"] = get_submitted_solutions_map(db, user_id)
 
     return render_template("exercises.html")
+
+
+@bp.route("/save-solution", methods=("POST",))
+@login_required
+def save_solution():
+    db = get_db()
+    user_id = session.get("user_id")
+
+    solution_correct = _handle_solution_submission(db, user_id)
+
+    if solution_correct:
+        return redirect(url_for("rev_webui.congrats"))
+
+    return redirect(url_for("rev_webui.wrong"))
 
 
 @bp.route("/congrats")

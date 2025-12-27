@@ -38,7 +38,7 @@
     height: 100%;
   }
   
-  /* D3/Dagre Styling placeholders - assuming remind.css handles specific node styling */
+  /* D3/Dagre Styling placeholders */
   .node rect {
     stroke: #333;
     fill: #fff;
@@ -63,23 +63,23 @@
         </h6>
         <ul class="nav flex-column mb-3">
           <li class="nav-item">
-            <a class="nav-link text-body" href="{{ url_for('first_chall.info') }}">
+            <a class="nav-link text-body" href="{{ url_for('challenge.info', chall_id=chall_id) }}">
               Info
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-body" href="{{ url_for('first_chall.strings') }}">
+            <a class="nav-link text-body" href="{{ url_for('challenge.strings', chall_id=chall_id) }}">
               Strings
             </a>
           </li>
           <li class="nav-item">
             <!-- Active State for Callgraph -->
-            <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold" href="{{ url_for('first_chall.callgraph') }}">
+            <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold" href="{{ url_for('challenge.callgraph', chall_id=chall_id) }}">
               Callgraph
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-body" href="{{ url_for('first_chall.first_chall', function='_init') }}">
+            <a class="nav-link text-body" href="{{ url_for('challenge.view', chall_id=chall_id, function='_init') }}">
               CFG / Disassembly
             </a>
           </li>
@@ -116,7 +116,7 @@
             <a href="{{ url_for('rev_webui.index') }}" class="btn btn-sm btn-outline-secondary">
                Pause
             </a>
-            <a href="{{ url_for('first_chall.confirm_solution') }}" class="btn btn-sm btn-outline-success">
+            <a href="{{ url_for('challenge.confirm_solution', chall_id=chall_id) }}" class="btn btn-sm btn-outline-success">
                Submit Solution
             </a>
           </div>
@@ -148,10 +148,12 @@
 
 <!-- Graph Logic -->
 <script id="js">
-  const current_chall = "first_chall"
+  // Dynamically set current challenge and base URL for API requests
+  const current_chall = {{ chall_id }};
+  base_url = "{{ url_for('challenge.view', chall_id=chall_id).rstrip('/') }}";
+
   // Function to find address by name in the loaded callgraph data
   function getAddressByFunctionName(name) {
-    // Check if callgraph global exists
     if (typeof callgraph === 'undefined') return 0;
     
     for (var i in callgraph) {
@@ -170,22 +172,17 @@
       return;
     }
     
-    // Ensure call_g (graph object) exists
     if (typeof call_g === 'undefined' || !call_g._nodes[name]) return;
 
     var rect = call_g._nodes[name].elem.firstChild;
     
-    // reset previous highlights if necessary here
-    
     // Highlight styling
-    rect.style["strokeWidth"] = "4px"; // Reduced slightly from 12.5px for cleaner look
-    rect.style["stroke"] = "#dc3545"; // Bootstrap danger color for visibility
+    rect.style["strokeWidth"] = "4px"; 
+    rect.style["stroke"] = "#dc3545"; 
     
     var x = call_g._nodes[name].x;
     var y = call_g._nodes[name].y;
     
-    // Calculate zoom transform
-    // Note: Adjust translation based on container center
     var svg = d3.select("svg");
     var width = svg.node().getBoundingClientRect().width;
     var height = svg.node().getBoundingClientRect().height;
@@ -200,7 +197,7 @@
   if (typeof downloadCallGraph === 'function') {
       downloadCallGraph();
   } else {
-      console.error("downloadCallGraph function is missing. Check utils.js includes.");
+      console.error("downloadCallGraph function is missing.");
   }
 </script>
 

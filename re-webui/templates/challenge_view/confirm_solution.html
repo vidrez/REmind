@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Submit Solution{% endblock %}
+{% block title %}Submit Solution - Challenge {{ chall_id }}{% endblock %}
 
 {% block content %}
 <link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
@@ -19,7 +19,10 @@
         </div>
 
         <div class="card-body p-4">
-          <form method="post" action="{{ url_for('rev_webui.index') }}">
+          <!-- The form action typically points to the dashboard where the logic handles submission -->
+          <form method="post" action="{{ url_for('rev_webui.save_solution') }}">
+            <!-- Hidden field to ensure the dashboard knows which challenge is being solved -->
+            <input type="hidden" name="challenge_num" value="{{ chall_id }}">
 
             <div class="mb-4">
               <label for="solution" class="form-label fw-semibold">
@@ -33,8 +36,9 @@
             <div class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center">
               <!-- Secondary Actions -->
               <div class="btn-group" role="group">
-                <a href="{{ url_for('first_chall.first_chall') }}" class="btn btn-outline-secondary">
-                   Back to Challenge
+                <!-- Modular link back to the current challenge view -->
+                <a href="{{ url_for('challenge.view', chall_id=chall_id) }}" class="btn btn-outline-secondary">
+                   <i class="bi bi-arrow-left me-1"></i> Back to Challenge
                 </a>
                 <a href="{{ url_for('rev_webui.index') }}" class="btn btn-outline-secondary">
                   Submit Later
@@ -43,7 +47,7 @@
 
               <!-- Submit Button -->
               <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
-                Submit Solution
+                Submit Solution <i class="bi bi-check-lg ms-1"></i>
               </button>
             </div>
 

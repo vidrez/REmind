@@ -38,13 +38,13 @@ def create_app() -> Flask:
     from . import (
         auth,
         rev_webui,
-        first_chall,
+        challenge,
     )
 
     blueprints = [
         auth.bp,
         rev_webui.bp,
-        first_chall.bp,
+        challenge.bp,
     ]
 
     for bp in blueprints:
