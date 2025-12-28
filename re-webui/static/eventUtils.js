@@ -74,7 +74,10 @@ function storeit() {
 
     fetch(`${base_url}/storeNotes`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
         body: new URLSearchParams({ 'token': id, 'notes': note })
     })
         .then(r => { if (r.ok) alert("Notes saved!"); })
@@ -85,7 +88,10 @@ async function downloadNotes() {
     try {
         const response = await fetch(`${base_url}/downloadNotes`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             body: new URLSearchParams({ 'token': id })
         });
         if (!response.ok) return;

@@ -24,7 +24,7 @@ services:
     container_name: remind_app
     restart: always
     volumes:
-      - .:/flask_website
+      - ./re-webui:/flask_website
     depends_on:
       db:
         condition: service_healthy

@@ -23,6 +23,7 @@
           <form method="post" action="{{ url_for('rev_webui.save_solution') }}">
             <!-- Hidden field to ensure the dashboard knows which challenge is being solved -->
             <input type="hidden" name="challenge_num" value="{{ chall_id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <div class="mb-4">
               <label for="solution" class="form-label fw-semibold">

@@ -19,7 +19,7 @@ from .auth import login_required
 bp = Blueprint("rev_webui", __name__, template_folder="templates/general/")
 
 CONFIG = get_general_config()
-NUM_CHALLENGES = CONFIG["challs"] + 1  # Challenges are 1-indexed
+NUM_CHALLENGES = CONFIG["challs"] + 1
 EXPERIMENT_MODE = CONFIG["experiment_mode"]
 
 # Index in the user tuple representing the 'solves' column
@@ -129,6 +129,8 @@ def index():
     current_solves_count = len(solved_records)
     session["solves"] = current_solves_count
     session["status_solutions"] = get_submitted_solutions_map(db, user_id)
+    session["pre_quest"] = CONFIG["pre_quest"]
+    session["post_quest"] = CONFIG["post_quest"]
 
     return render_template("exercises.html")
 

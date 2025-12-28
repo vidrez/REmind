@@ -3,7 +3,6 @@ import json
 import os
 import binascii
 from typing import Dict
-import sys
 from flask import (
     Blueprint,
     flash,

@@ -6,7 +6,8 @@ if (!token) {
     fetch("/auth/token/validate", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify({ token: token })
     })
@@ -28,7 +29,11 @@ if (!token) {
 let generateToken = () => {
     document.getElementById("signup").setAttribute('disabled', '');
     fetch("/auth/token", {
-        method: "POST"
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
     })
         .then(response => response.json())
         .then(data => {

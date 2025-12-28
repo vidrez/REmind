@@ -2,7 +2,8 @@
 FROM python:3.14-slim
 
 WORKDIR /flask_website
-COPY . /flask_website
+COPY ./re-webui /flask_website
+COPY requirements.txt /flask_website/requirements.txt
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
@@ -15,8 +16,8 @@ RUN pip install -r requirements.txt
 
 EXPOSE 4000
 
-WORKDIR /flask_website/re-webui
+RUN rm requirements.txt
+WORKDIR /
 
-# Run app.py when the container launches
-CMD ["flask", "run", "--host", "0.0.0.0", "-p", "4000"]
+CMD ["python", "-m", "flask_website.flask_website"]
 

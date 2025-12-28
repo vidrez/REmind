@@ -18,7 +18,10 @@ async function get_xrefs_from(func) {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             body: new URLSearchParams({ 'name': func, 'token': id })
         });
         if (!response.ok) return;
@@ -41,7 +44,10 @@ async function get_xrefs_to(func) {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             body: new URLSearchParams({ 'name': func, 'token': id })
         });
         if (!response.ok) return;
@@ -64,7 +70,10 @@ async function downloadCallGraph() {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             body: new URLSearchParams({ 'name': 'callgraph' })
         });
         if (!response.ok) return;
@@ -79,7 +88,10 @@ async function downloadCFG(func) {
     try {
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             body: new URLSearchParams({ 'name': func, 'token': id })
         });
         if (!response.ok) return;
@@ -490,3 +502,13 @@ function copyToClipboard(text) {
     }
     return navigator.clipboard.writeText(text);
 }
+
+window.addEventListener("blur", () => {
+    console.log("The window has lost focus.");
+    send_results({ timestamp: Date.now(), event: 'window_unfocus', element: '', value: '' });
+});
+
+window.addEventListener("focus", () => {
+    console.log("The window has regained focus.");
+    send_results({ timestamp: Date.now(), event: 'window_focus', element: '', value: '' });
+});
