@@ -55,6 +55,16 @@ docker compose run --rm certbot renew && docker compose restart nginx
 
 That's all folks!
 
+## Something broke?
+
+<img width="498" height="272" alt="image" src="https://github.com/user-attachments/assets/c31bc64b-66a0-4522-bdf2-8ddb83133894" />
+
+No but really, have you tried?
+
+### Exibit A: Nginx 502 Bad Gateway
+
+After recreating my container nginx decided to break, likely some weirdness in the nginx container not expecting the app to go down and be unreachable, how to fix? **restart the nginx service**. 
+
 ## Updated guide for adding a challenge
 
 1. Take a binary (tested and working on compiled from C)
