@@ -65,6 +65,10 @@ No but really, have you tried?
 
 After recreating my container nginx decided to break, likely some weirdness in the nginx container not expecting the app to go down and be unreachable, how to fix? **restart the nginx service**. 
 
+### Exibit B: Database connection errors
+
+Does your DB password contain special characters? If so, try changing it to something simpler without special characters. If that doesn't work, try restarting the database container.
+
 ## Updated guide for adding a challenge
 
 1. Take a binary (tested and working on compiled from C)
