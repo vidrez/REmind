@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: remind_db
+    restart: always
+    env_file:
+      - db.env
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql-conf/my_custom.cnf:/etc/mysql/conf.d/my_custom.cnf
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  remind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: remind_app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - app.env
+      - db.env
+    expose:
+      - "4000"
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: remind_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - remind
+    networks:
+      - app-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: remind_certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
