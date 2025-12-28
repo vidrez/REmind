@@ -1,1 +1,0 @@
-{"_start_edges": {"edges": []}, "_start_bbs": {"0x401040": "0x401040: endbr64 \n0x401044: xor ebp, ebp\n0x401046: mov r9, rdx\n0x401049: pop rsi\n0x40104a: mov rdx, rsp\n0x40104d: and rsp, 0xfffffffffffffff0\n0x401051: push rax\n0x401052: push rsp\n0x401053: xor r8d, r8d\n0x401056: xor ecx, ecx\n0x401058: mov rdi, 0x401131\n0x40105f: call qword ptr [rip + 0x2f63]\n"}}

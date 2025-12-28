@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+
+{% block title %}Analysis - {{ session.get('function_name', 'Main') }}{% endblock %}
+
+{% block content %}
+<!-- Stylesheets -->
+<link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
+
+<style>
+    /* Sidebar hover effects */
+    .sidebar .nav-link {
+        transition: all 0.2s ease-in-out;
+        border-radius: 0.375rem;
+    }
+
+    .sidebar .nav-link:hover {
+        background-color: var(--bs-secondary-bg);
+        color: var(--bs-primary) !important;
+        padding-left: 1rem;
+    }
+
+    /* CFG Container */
+    .cfg-wrapper {
+        position: relative;
+        height: calc(100vh - 120px);
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+
+    [data-bs-theme="dark"] .cfg-wrapper {
+        background-color: #212529;
+        border-color: #495057;
+    }
+
+    .cfg-wrapper svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* PREVENT TEXT SELECTION */
+    pre, code, .token.generic, svg text {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+    /* ADDRESS INTERACTIVITY CUES */
+    .token.generic {
+        cursor: pointer !important;
+        border-bottom: 1px dashed rgba(var(--bs-primary-rgb), 0.4);
+        transition: all 0.2s ease;
+        padding: 0 1px;
+    }
+
+    .token.generic:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.15);
+        border-bottom: 1px solid var(--bs-primary);
+        color: var(--bs-primary) !important;
+    }
+
+    /* DAGRE-D3 GRAPH STYLES */
+    g.edgePath path {
+        stroke: #333 !important;
+        fill: none !important;
+        stroke-width: 2.5px !important;
+    }
+
+    marker { fill: #333 !important; }
+    g.node rect { stroke: #333; fill: #fff; }
+
+    [data-bs-theme="dark"] g.edgePath path { stroke: #adb5bd !important; }
+    [data-bs-theme="dark"] marker { fill: #adb5bd !important; }
+    [data-bs-theme="dark"] g.node rect { stroke: #6c757d; fill: #343a40; }
+
+    /* Code Container & Copy Button Styles */
+    .code-container {
+        position: relative;
+        display: block;
+        font-size: 95%;
+        overflow: hidden;
+    }
+
+    .copy-btn {
+        position: absolute;
+        top: 0px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: 1px solid rgba(var(--bs-body-color-rgb), 0.2);
+        border-radius: 4px;
+        background: var(--bs-body-bg);
+        color: var(--bs-body-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: all 0.2s;
+        z-index: 100;
+        user-select: auto;
+    }
+
+    .copy-btn:hover {
+        opacity: 1;
+        background: var(--bs-primary);
+        color: white;
+        transform: scale(1.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Editor Styles */
+    .editor-textarea {
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 14px;
+        width: 100%;
+        height: 70vh;
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        border: 1px solid #444;
+        padding: 10px;
+        resize: none;
+        user-select: auto;
+    }
+
+    #notes_area { user-select: auto; }
+
+    .output-pre {
+        background-color: #2d2d2d;
+        color: #ffd700;
+        padding: 10px;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: monospace;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar (Modular Links) -->
+        <nav id="sidebarMenu" class="col-md-auto d-md-block bg-body-tertiary sidebar collapse border-end"
+            style="min-height: calc(100vh - 56px); min-width: 220px; max-width: 400px;"
+            onmouseover="if(typeof selected === 'function'){ selected(null); }">
+            <div class="position-sticky pt-3">
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted text-uppercase small fw-bold">
+                    <span>Analysis Views</span>
+                </h6>
+                <ul class="nav flex-column mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link text-body" href="{{ url_for('challenge.info', chall_id=chall_id) }}">Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-body" href="{{ url_for('challenge.strings', chall_id=chall_id) }}">Strings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-body" href="{{ url_for('challenge.callgraph', chall_id=chall_id) }}">Callgraph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold"
+                            href="{{ url_for('challenge.view', chall_id=chall_id, function='_init') }}">
+                            CFG / Disassembly
+                        </a>
+                    </li>
+                </ul>
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase small fw-bold">
+                    <span>Functions</span>
+                </h6>
+                <ul class="nav flex-column" style="max-height: 80vh; overflow-y: auto;">
+                    {% for key, name in session.get('functions', {}).items() %}
+                    <li class="nav-item">
+                        <a id="{{ key }}" class="nav-link py-1 small text-muted text-break {{ key }} token"
+                            href="{{ url_for('challenge.view', chall_id=chall_id, function=key) }}"
+                            onclick="if(typeof push_function_history === 'function') push_function_history(null, null);"
+                            title="{{ name }}">
+                            {{ name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">
+                    Control Flow Graph
+                    <small class="text-muted fs-6 ms-2">({{ session.get('function_name', 'Unknown') }})</small>
+                </h1>
+
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas"
+                            data-bs-target="#pythonOffcanvas"> Python</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas"
+                            data-bs-target="#notesOffcanvas" onclick="downloadNotes()"> Notes</button>
+                    </div>
+                    <div class="btn-group">
+                        <a href="{{ url_for('rev_webui.index') }}" class="btn btn-sm btn-outline-secondary"
+                            onclick="if(typeof on_pause === 'function') on_pause()"> Pause</a>
+                        <a href="{{ url_for('challenge.confirm_solution', chall_id=chall_id) }}" class="btn btn-sm btn-outline-success"
+                            onclick="if(typeof on_pause === 'function') on_pause()"> Submit</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CFG Area -->
+            <div class="cfg-wrapper cfg">
+                <svg id="cfg-svg"></svg>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Offcanvas Components remain the same -->
+<div class="offcanvas offcanvas-end w-50" tabindex="-1" id="pythonOffcanvas" data-bs-backdrop="false">
+    <div class="offcanvas-header bg-dark text-white">
+        <h5 class="offcanvas-title font-monospace">Python Interpreter</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body bg-dark text-light">
+        <textarea id="yourcode" class="editor-textarea mb-2" spellcheck="false"># Write here your python code snippets!</textarea>
+        <button type="button" class="btn btn-success w-100 fw-bold font-monospace" onclick="run_py()">Run Code</button>
+        <pre id="output" class="output-pre">Ready...</pre>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end w-25" tabindex="-1" id="notesOffcanvas" data-bs-backdrop="false">
+    <div class="offcanvas-header bg-body-tertiary border-bottom">
+        <h5 class="offcanvas-title">My Notes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <textarea id="notes_area" class="form-control flex-grow-1 mb-3 font-monospace" style="resize: none;"
+            spellcheck="false" placeholder="Type your observations here..."></textarea>
+        <button type="button" class="btn btn-primary w-100" onclick="storeit()"> Save Notes</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Core Libraries -->
+<script type="text/javascript" src="{{url_for('static', filename='./d3.v4.min.js') }}" charset="utf-8"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./dagre-d3.min.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./skulpt.min.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./skulpt-stdlib.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'globalVariables.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'utils.js') }}"></script>
+
+<script>
+    // Modular Constants
+    const current_chall = {{ chall_id }};
+    base_url = "{{ url_for('challenge.view', chall_id=chall_id).rstrip('/') }}";
+    
+    // Global identifiers for API calls
+    var id = '{{ session['tmp_token'] }}';
+    var addr_to_zoom = '{{ session['addr'] }}';
+    var func_to_download = '{{ session['function_name'] }}';
+</script>
+
+<script src="{{ url_for('static', filename='prism2.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./eventUtils.js' )}}"></script>
+
+<script id="js">
+    localStorage.setItem("lastChallId", current_chall);
+    localStorage.setItem("function", func_to_download);
+
+    // Initial load logic
+    if (typeof downloadCFG === 'function') downloadCFG(func_to_download);
+
+    // Copy Button & UI Mutation Observer
+    const observer = new MutationObserver(() => {
+        if (typeof addCopyButtons === 'function') addCopyButtons();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Skulpt (Python) Integration
+    function outf(text) { document.getElementById("output").innerHTML += text; }
+    function builtinRead(x) {
+        if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+        return Sk.builtinFiles["files"][x];
+    }
+    function run_py() {
+        var prog = document.getElementById("yourcode").value;
+        var mypre = document.getElementById("output");
+        mypre.innerHTML = '';
+        Sk.pre = "output";
+        Sk.configure({ output: outf, read: builtinRead });
+        var myPromise = Sk.misceval.asyncToPromise(() => Sk.importMainWithBody("<stdin>", false, prog, true));
+        myPromise.then(() => console.log('success'), (err) => { mypre.innerHTML += '\n' + err.toString(); });
+    }
+</script>
+{% endblock %}

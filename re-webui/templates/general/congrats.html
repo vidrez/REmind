@@ -1,72 +1,40 @@
-<!doctype html>
+{% extends 'base.html' %}
 
-<meta charset="utf-8">
-<title>Re-Mind Demo</title>
+{% block title %}Success{% endblock %}
 
-<link href="{{url_for('static', filename='prism.css') }}" rel="stylesheet" />
+{% block content %}
 <link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
 
-<style>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white text-center py-4 border-0">
+          <h1 class="h3 mb-0 fw-bold">Congratulations!</h1>
+        </div>
+        <div class="card-body text-center p-5 bg-body-tertiary">
+          <div class="mb-4 text-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="bi bi-trophy-fill"
+              viewBox="0 0 16 16">
+              <path
+                d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.589-.388 2.885-.72 3.935z" />
+            </svg>
+          </div>
 
-.cfgbutton {
-    background-color: transparent;
-    background:url("{{url_for('static', filename='./gear.png')}}") no-repeat;
-    border: none;
-    cursor: pointer;
-    height: 50px;
-    padding-left: 50px;
-    vertical-align: middle;
-}
+          <h2 class="card-title fw-bold mb-3">Challenge Solved</h2>
+          <p class="card-text fs-5 text-muted mb-5">
+            Excellent work! You have successfully completed this task.
+          </p>
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {background-color: #414141; color:white;}
-.dropdown:hover .dropdown-content {display: block;}
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
-</style>
-
-<body>
-
-    <div class="dropdown" style="float:right;">
-      <button class="cfgbutton"></button>
-      <div class="dropdown-content">
-       <a href="auth/logout">Logout</a>
+          <div class="d-grid gap-2 col-sm-8 mx-auto">
+            <a href="{{ url_for('rev_webui.index') }}"
+              class="btn btn-success btn-lg rounded-pill fw-semibold shadow-sm">
+              Continue to Other Challenges
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  </div>
-
-  <div class="mainw">
-      <br/>
-      <div class="asm_links"><h1> Welcome! </h1> </div>
-<hr style="height:2px;border:none;color:#333;background-color:#333;" />
-  <br/>
- </div>
- <div class="choice">
-
-     <h1>Congrats!!! Challenge solved, go on with the other <a href="{{ url_for('rev_webui.index') }}">ones</a> </h1>
-
-
-
-</body>
-
-
-</html>
+</div>
+{% endblock %}

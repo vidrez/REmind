@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Solution - Challenge {{ chall_id }}{% endblock %}
+
+{% block content %}
+<link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Main Card -->
+      <div class="card shadow-sm border-0 rounded-3">
+
+        <!-- Card Header -->
+        <div class="card-header bg-body-tertiary border-bottom-0 pt-4 pb-0 text-center">
+          <h1 class="h3 fw-bold text-primary">Did you find the solution?</h1>
+          <p class="text-muted">Document your steps below to complete the challenge.</p>
+        </div>
+
+        <div class="card-body p-4">
+          <!-- The form action typically points to the dashboard where the logic handles submission -->
+          <form method="post" action="{{ url_for('rev_webui.save_solution') }}">
+            <!-- Hidden field to ensure the dashboard knows which challenge is being solved -->
+            <input type="hidden" name="challenge_num" value="{{ chall_id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <div class="mb-4">
+              <label for="solution" class="form-label fw-semibold">
+                Write here the steps to get the 'Success!' string:
+              </label>
+              <textarea class="form-control" name="solution" id="solution" rows="10"
+                placeholder="Describe your solution steps or paste the command line arguments here..."
+                required></textarea>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center">
+              <!-- Secondary Actions -->
+              <div class="btn-group" role="group">
+                <!-- Modular link back to the current challenge view -->
+                <a href="{{ url_for('challenge.view', chall_id=chall_id) }}" class="btn btn-outline-secondary">
+                   <i class="bi bi-arrow-left me-1"></i> Back to Challenge
+                </a>
+                <a href="{{ url_for('rev_webui.index') }}" class="btn btn-outline-secondary">
+                  Submit Later
+                </a>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
+                Submit Solution <i class="bi bi-check-lg ms-1"></i>
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

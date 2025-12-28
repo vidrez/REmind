@@ -13,7 +13,9 @@ def get_general_config():
 
     config_dict["experiment_mode"] = config["DEFAULT"].getint("experiment_mode")
     config_dict["challs"] = config["DEFAULT"].getint("challs")
-    config_dict["admins"] = config["DEFAULT"]["admin"].split(";")
+    config_dict["pre_quest"] = os.getenv("PRE_QUEST_URL", "")
+    config_dict["post_quest"] = os.getenv("POST_QUEST_URL", "")
+
     return config_dict
 
 

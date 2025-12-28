@@ -1,1 +1,0 @@
-{"sub_401066_edges": {"edges": []}, "sub_401066_bbs": {"0x401066": "0x401066: nop word ptr cs:[rax + rax]\n0x401070: endbr64 \n0x401074: ret \n"}}

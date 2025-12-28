@@ -1,16 +1,14 @@
 ## Phase 1: Frontend Migration (Vue.js)
 
-**Goal**: Modernize the frontend stack to Vue.js for better maintainability and performance.
+**Goal**: Modernize the frontend stack for better maintainability and performance.
 
-- [ ] Initialize Vue Project & Migrate existing challenges
+- [x] Migrate existing challenges
 
 ## Phase 2: Experimental Logic & Metrics
 
 **Goal**: Implement extra stats to capture user behavior.
 
-- [ ] Implement 1-3 hour timer for each challenge.
-
-- [ ] Focus Tracking (The "LLM Detector"): Check when window/tab loses focus to be interpreted as LLM usage.
+- [x] Focus Tracking (The "LLM Detector"): Check when window/tab loses focus to be interpreted as LLM usage.
 
 ## Phase 3: Survey & Data Collection
 

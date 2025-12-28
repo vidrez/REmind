@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}Callgraph Analysis{% endblock %}
+
+{% block content %}
+<!-- Stylesheets -->
+<link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
+
+<style>
+  /* Sidebar hover effects */
+  .sidebar .nav-link {
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.375rem;
+    cursor: pointer;
+  }
+  .sidebar .nav-link:hover {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-primary) !important;
+    padding-left: 1rem;
+  }
+  
+  /* Graph Container Styling */
+  .cfg-container {
+    height: calc(100vh - 140px); /* Adjust based on header/toolbar height */
+    background-color: #fff;      /* Ensure clean background for graph */
+    overflow: hidden;            /* SVG handles panning */
+    border-radius: 0.375rem;
+  }
+
+  /* Dark mode adjustment for graph container if needed */
+  [data-bs-theme="dark"] .cfg-container {
+    background-color: #2b3035;
+  }
+  
+  /* SVG Styles */
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* D3/Dagre Styling placeholders */
+  .node rect {
+    stroke: #333;
+    fill: #fff;
+  }
+  .edgePath path {
+    stroke: #333;
+    fill: none;
+    stroke-width: 1.5px;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="row">
+    
+    <!-- Sidebar -->
+    <nav id="sidebarMenu" class="col-md-auto d-md-block bg-body-tertiary sidebar collapse border-end" style="min-height: calc(100vh - 56px); min-width: 220px; max-width: 400px;" onmouseover="if(typeof selected === 'function'){ selected(null); }">
+      <div class="position-sticky pt-3">
+        
+        <!-- Analysis Views Navigation -->
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted text-uppercase small fw-bold">
+          <span>Analysis Views</span>
+        </h6>
+        <ul class="nav flex-column mb-3">
+          <li class="nav-item">
+            <a class="nav-link text-body" href="{{ url_for('challenge.info', chall_id=chall_id) }}">
+              Info
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-body" href="{{ url_for('challenge.strings', chall_id=chall_id) }}">
+              Strings
+            </a>
+          </li>
+          <li class="nav-item">
+            <!-- Active State for Callgraph -->
+            <a class="nav-link active bg-primary bg-opacity-10 text-primary fw-semibold" href="{{ url_for('challenge.callgraph', chall_id=chall_id) }}">
+              Callgraph
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-body" href="{{ url_for('challenge.view', chall_id=chall_id, function='_init') }}">
+              CFG / Disassembly
+            </a>
+          </li>
+        </ul>
+
+        <!-- Functions List (Zoom Interactions) -->
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted text-uppercase small fw-bold">
+          <span>Functions (Zoom)</span>
+        </h6>
+        <ul class="nav flex-column" style="max-height: 80vh; overflow-y: auto;">
+          {% for f in session.get('functions', {}) %}
+          <li class="nav-item">
+            <a class="nav-link py-1 small text-muted text-break" 
+               id="{{ f }}" 
+               href="#" 
+               onclick="reach('{{ f }}'); return false;"
+               title="{{ session['functions'][f] }}">
+              {{ session['functions'][f] }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="col ms-sm-auto px-md-4">
+      
+      <!-- Toolbar Header -->
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Call Graph Analysis</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="{{ url_for('rev_webui.index') }}" class="btn btn-sm btn-outline-secondary">
+               Pause
+            </a>
+            <a href="{{ url_for('challenge.confirm_solution', chall_id=chall_id) }}" class="btn btn-sm btn-outline-success">
+               Submit Solution
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph Visualization Area -->
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-1">
+          <div class="cfg-container border rounded bg-light">
+            <svg id="callgraph-svg">
+               <g transform="translate(20,20)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+</div>
+
+<!-- D3 & Graph Libraries -->
+<script type="text/javascript" src="{{url_for('static', filename='./d3.v4.min.js') }}" charset="utf-8"></script>
+<script type="text/javascript" src="{{url_for('static', filename='./dagre-d3.min.js') }}"></script>
+
+<!-- Custom Scripts -->
+<script type="text/javascript" src="{{ url_for('static', filename = 'globalVariables.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'utils.js') }}"></script>
+
+<!-- Graph Logic -->
+<script id="js">
+  // Dynamically set current challenge and base URL for API requests
+  const current_chall = {{ chall_id }};
+  base_url = "{{ url_for('challenge.view', chall_id=chall_id).rstrip('/') }}";
+
+  // Function to find address by name in the loaded callgraph data
+  function getAddressByFunctionName(name) {
+    if (typeof callgraph === 'undefined') return 0;
+    
+    for (var i in callgraph) {
+      if (name == callgraph[i]["label"]) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  // Function to zoom/pan to a specific node
+  function reach(funcName) {
+    var name = getAddressByFunctionName(funcName);
+    if (name == 0) {
+      console.warn("Function not found in graph:", funcName);
+      return;
+    }
+    
+    if (typeof call_g === 'undefined' || !call_g._nodes[name]) return;
+
+    var rect = call_g._nodes[name].elem.firstChild;
+    
+    // Highlight styling
+    rect.style["strokeWidth"] = "4px"; 
+    rect.style["stroke"] = "#dc3545"; 
+    
+    var x = call_g._nodes[name].x;
+    var y = call_g._nodes[name].y;
+    
+    var svg = d3.select("svg");
+    var width = svg.node().getBoundingClientRect().width;
+    var height = svg.node().getBoundingClientRect().height;
+    
+    d3.select('svg').transition().duration(750).call(
+      call_zoom.transform, 
+      d3.zoomIdentity.translate(-x + width/2, -y + height/2).scale(1)
+    );
+  }
+
+  // Initialize graph download
+  if (typeof downloadCallGraph === 'function') {
+      downloadCallGraph();
+  } else {
+      console.error("downloadCallGraph function is missing.");
+  }
+</script>
+
+{% endblock %}

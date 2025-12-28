@@ -1,73 +1,41 @@
-<!doctype html>
+{% extends 'base.html' %}
 
-<meta charset="utf-8">
-<title>Re-Mind Demo</title>
+{% block title %}Incorrect Solution{% endblock %}
 
-<link href="{{url_for('static', filename='prism.css') }}" rel="stylesheet" />
+{% block content %}
 <link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
 
-<style>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-danger text-white text-center py-4 border-0">
+          <h1 class="h3 mb-0 fw-bold">Incorrect Solution</h1>
+        </div>
+        <div class="card-body text-center p-5 bg-body-tertiary">
+          <div class="mb-4 text-danger">
+            <!-- Bootstrap Icon: X Circle Fill -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor"
+              class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+            </svg>
+          </div>
 
-.cfgbutton {
-    background-color: transparent;
-    background:url("{{url_for('static', filename='./gear.png')}}") no-repeat;
-    border: none;
-    cursor: pointer;
-    height: 50px;
-    padding-left: 50px;
-    vertical-align: middle;
-}
+          <h2 class="card-title fw-bold mb-3">Not Quite Right</h2>
+          <p class="card-text fs-5 text-muted mb-5">
+            That solution didn't match the expected output. Don't worry, review the binary and try again!
+          </p>
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {background-color: #414141; color:white;}
-.dropdown:hover .dropdown-content {display: block;}
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
-</style>
-
-<body>
-
-    <div class="dropdown" style="float:right;">
-      <button class="cfgbutton"></button>
-      <div class="dropdown-content">
-       <a href="auth/logout">Logout</a>
+          <div class="d-grid gap-2 col-sm-8 mx-auto">
+            <a href="{{ url_for('rev_webui.index') }}"
+              class="btn btn-outline-danger btn-lg rounded-pill fw-semibold shadow-sm">
+              Retry Challenge
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  </div>
-
-  <div class="mainw">
-      <br/>
-      <div class="asm_links"><h1> Welcome! </h1> </div>
-<hr style="height:2px;border:none;color:#333;background-color:#333;" />
-  <br/>
- </div>
- <div class="choice">
-
-     <h1>Wrong!!! Retry<br>
-        </h1>
-
-
-
-</body>
-
-
-</html>
+</div>
+{% endblock %}

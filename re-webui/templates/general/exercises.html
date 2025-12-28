@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<link href="{{url_for('static', filename='remind.css') }}" rel="stylesheet" />
+
+<div class="row g-4 m-4">
+
+  <!-- Welcome Section -->
+  <div class="col-12">
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 border">
+      <div class="container-fluid py-2">
+        <h1 class="display-5 fw-bold">Welcome!</h1>
+        <p class="col-md-8 fs-4">Select an exercise below to begin your reverse engineering analysis.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <!-- Dynamic Challenge Selection -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">Choose Your Exercise</h5>
+      </div>
+      <div class="list-group list-group-flush">
+        {% if session.get('pre_quest') %}
+          <a href="{{ session['pre_quest'] }}" 
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" target="_blank">
+            <div>
+              <span class="fw-bold">Pre-Exercise Questionnaire</span>
+              <small class="d-block text-muted">
+                Please complete this before starting the exercises.
+              </small>
+            </div>
+            <span class="badge bg-danger rounded-pill">Start</span>
+          </a>
+        {% endif %}
+        {% if session.get('status_solutions') %}
+          {% for chall_id, solved in session['status_solutions'].items()|sort %}
+          <a id="chall_{{ chall_id }}" 
+             href="{{ url_for('challenge.view', chall_id=chall_id, function='main') }}"
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div>
+              <span class="fw-bold">
+                {% if chall_id == 1 %}Warmup{% else %}Challenge {{ chall_id }}{% endif %}
+              </span>
+              <small class="d-block text-muted">
+                Binary analysis task
+              </small>
+            </div>
+            {% if solved %}
+              <span class="badge bg-success rounded-pill">Solved</span>
+            {% else %}
+              <span class="badge bg-secondary rounded-pill">Pending</span>
+            {% endif %}
+          </a>
+          {% endfor %}
+        {% else %}
+          <div class="list-group-item text-center text-muted py-4">
+            No challenges available. Please check your configuration.
+          </div>
+        {% endif %}
+        {% if session.get('post_quest') %}
+          <a href="{{ session['post_quest'] }}" 
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" target="_blank">
+            <div>
+              <span class="fw-bold">Post-Exercise Questionnaire</span>
+              <small class="d-block text-muted">
+                Please complete this after finishing the exercises.
+              </small>
+            </div>
+            <span class="badge bg-danger rounded-pill">Finish</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Task Description -->
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Your Objective</h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">
+          Your goal is to analyze the binary and identify the specific input required to trigger a
+          <strong class="text-success">"Congratulations"</strong> or <strong class="text-success">"Success!"</strong>
+          message.
+        </p>
+        <p class="card-text">
+          Once you have found the solution, click the <strong>"Submit Solution"</strong> button located in the top-right
+          corner of the interface.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">How to use the WebUI</h5>
+      </div>
+      <div class="card-body">
+        <p>This interface provides standard reverse engineering features similar to tools like IDA or Radare2.</p>
+
+        <h6 class="mt-3 text-primary">Keyboard Shortcuts</h6>
+        <div class="row g-2 text-center mb-3">
+          <div class="col-4"><div class="border rounded p-2 h-100"><kbd>c</kbd><br><small>Comment</small></div></div>
+          <div class="col-4"><div class="border rounded p-2 h-100"><kbd>r</kbd><br><small>Rename</small></div></div>
+          <div class="col-4"><div class="border rounded p-2 h-100"><kbd>Esc</kbd><br><small>Jump Back</small></div></div>
+          <div class="col-6"><div class="border rounded p-2 h-100"><kbd>p</kbd><br><small>Python Tool</small></div></div>
+          <div class="col-6"><div class="border rounded p-2 h-100"><kbd>n</kbd><br><small>Notes Panel</small></div></div>
+        </div>
+
+        <h6 class="mt-3 text-primary">Navigation Tabs</h6>
+        <ul>
+          <li><strong>Strings:</strong> View strings and their cross-references (xrefs).</li>
+          <li><strong>Callgraph:</strong> Visual representation of function calls.</li>
+          <li><strong>Functions List:</strong> View xrefs (to and from) for any selected function.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /**
+   * Restoration Logic for Dynamic Routing
+   * Rebuilds the last visited URL for a challenge based on stored state.
+   */
+  try {
+    localStorage.removeItem("myFunctionHistory");
+    const storedFunc = localStorage.getItem("function");
+    const storedAddr = localStorage.getItem("addr");
+    const lastChallId = localStorage.getItem("lastChallId");
+
+    if (lastChallId) {
+      // chall_id is stored as an integer, link IDs are chall_{id}
+      const challElement = document.getElementById("chall_" + lastChallId);
+
+      if (challElement && storedFunc && storedFunc !== "None") {
+        // Updated to follow the modular URL pattern: /challenge/ID/
+        let newHref = "/challenge/" + lastChallId + "/?function=" + storedFunc;
+
+        if (storedAddr && storedAddr !== "None") {
+          newHref += "&&addr=" + storedAddr;
+        }
+        challElement.href = newHref;
+      }
+    }
+  } catch (e) {
+    console.error("Error restoring state from localStorage:", e);
+  }
+</script>
+
+{% endblock %}
