@@ -1,0 +1,1 @@
+{"__isoc99_scanf_edges": {"edges": []}, "__isoc99_scanf_bbs": {"0x4010d0": "0x4010d0: endbr64 \n0x4010d4: bnd jmp qword ptr [rip + 0x2ef5]\n"}}

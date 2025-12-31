@@ -6,7 +6,7 @@ GENERAL_CONFIG = "./config.ini"
 
 
 def get_general_config():
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(CURRENT, GENERAL_CONFIG))
 
     config_dict = dict()
@@ -20,7 +20,7 @@ def get_general_config():
 
 
 def get_chall_config(chall_id):
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(CURRENT, GENERAL_CONFIG))
 
     config_dict = dict()

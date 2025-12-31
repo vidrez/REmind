@@ -1,0 +1,1 @@
+{"sub_401209_edges": {"edges": []}, "sub_401209_bbs": {"0x401209": "0x401209: nop dword ptr [rax]\n0x401210: cmp ebx, 7\n0x401213: jg 0x401250\n"}}

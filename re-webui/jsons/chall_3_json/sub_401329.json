@@ -1,0 +1,1 @@
+{"sub_401329_edges": {"edges": []}, "sub_401329_bbs": {"0x401329": "0x401329: nop dword ptr [rax]\n0x401330: endbr64 \n0x401334: cmp byte ptr [rip + 0x2cdd], 0\n0x40133b: jne 0x401368\n"}}

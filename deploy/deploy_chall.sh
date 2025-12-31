@@ -18,6 +18,6 @@ then
 fi
 
 mkdir -p $OUTPUT_PATH 
-python $SCRIPTS/get_binary_info.py $PATH_TO_BINARY $OUTPUT_PATH
-python $SCRIPTS/get_strings_second_version.py $PATH_TO_BINARY $OUTPUT_PATH # Change angr offset in case of PIE
+python3 $SCRIPTS/get_binary_info.py $PATH_TO_BINARY $OUTPUT_PATH
+python3 $SCRIPTS/get_strings_second_version.py $PATH_TO_BINARY $OUTPUT_PATH # Change angr offset in case of PIE
 
