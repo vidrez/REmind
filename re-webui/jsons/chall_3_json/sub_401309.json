@@ -1,0 +1,1 @@
+{"sub_401309_edges": {"edges": []}, "sub_401309_bbs": {"0x401309": "0x401309: nop dword ptr [rax]\n0x401310: lea rdi, [rip + 0x2cf9]\n0x401317: lea rsi, [rip + 0x2cf2]\n0x40131e: sub rsi, rdi\n0x401321: mov rax, rsi\n0x401324: shr rsi, 0x3f\n0x401328: sar rax, 3\n0x40132c: add rsi, rax\n0x40132f: sar rsi, 1\n0x401332: je 0x401348\n"}}

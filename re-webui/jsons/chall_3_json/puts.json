@@ -1,1 +1,1 @@
-{"puts_edges": {"edges": []}, "puts_bbs": {"0x401090": "0x401090: endbr64 \n0x401094: bnd jmp qword ptr [rip + 0x2f15]\n"}}
+{"puts_edges": {"edges": []}, "puts_bbs": {"0x401090": "0x401090: endbr64 \n0x401094: jmp qword ptr [rip + 0x2f16]\n"}}

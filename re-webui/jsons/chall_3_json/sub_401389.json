@@ -1,0 +1,1 @@
+{"sub_401389_edges": {"edges": []}, "sub_401389_bbs": {"0x401389": "0x401389: nop dword ptr [rax]\n0x401390: endbr64 \n0x401394: jmp register_tm_clones"}}

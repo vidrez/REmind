@@ -1,0 +1,1 @@
+{"sub_40107e_edges": {"edges": []}, "sub_40107e_bbs": {"0x40107e": "0x40107e: nop \n0x401080: endbr64 \n0x401084: jmp qword ptr [rip + 0x2f6e]\n"}}

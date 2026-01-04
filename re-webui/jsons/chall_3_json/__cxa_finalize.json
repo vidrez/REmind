@@ -1,1 +1,1 @@
-{"__cxa_finalize_edges": {"edges": []}, "__cxa_finalize_bbs": {"0x401080": "0x401080: endbr64 \n0x401084: bnd jmp qword ptr [rip + 0x2f6d]\n"}}
+{"__cxa_finalize_edges": {"edges": []}, "__cxa_finalize_bbs": {"0x401080": "0x401080: endbr64 \n0x401084: jmp qword ptr [rip + 0x2f6e]\n"}}

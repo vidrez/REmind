@@ -1,1 +1,1 @@
-{"sub_401030_edges": {"edges": []}, "sub_401030_bbs": {"0x401030": "0x401030: endbr64 \n0x401034: push 0\n0x401039: bnd jmp 0x401020\n"}}
+{"sub_401030_edges": {"edges": []}, "sub_401030_bbs": {"0x401030": "0x401030: endbr64 \n0x401034: push 0\n0x401039: jmp sub_401020"}}

@@ -1,1 +1,1 @@
-{"__stack_chk_fail_edges": {"edges": []}, "__stack_chk_fail_bbs": {"0x4010b0": "0x4010b0: endbr64 \n0x4010b4: bnd jmp qword ptr [rip + 0x2f05]\n"}}
+{"__stack_chk_fail_edges": {"edges": []}, "__stack_chk_fail_bbs": {"0x4010b0": "0x4010b0: endbr64 \n0x4010b4: jmp qword ptr [rip + 0x2f06]\n"}}

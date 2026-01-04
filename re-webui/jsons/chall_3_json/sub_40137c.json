@@ -1,1 +1,0 @@
-{"sub_40137c_edges": {"edges": []}, "sub_40137c_bbs": {"0x40137c": "0x40137c: endbr64 \n0x401380: sub rsp, 8\n0x401384: add rsp, 8\n0x401388: ret \n"}}
