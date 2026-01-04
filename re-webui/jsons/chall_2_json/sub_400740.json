@@ -1,0 +1,1 @@
+{"sub_400740_edges": {"edges": [["0x400740", "0x400749"], ["0x400740", "0x400778"]]}, "sub_400740_bbs": {"0x400740": "0x400740: cmp byte ptr [rip + 0x2008c9], 0\n0x400747: jne 0x400778\n", "0x400749": "0x400749: cmp qword ptr [rip + 0x2008a7], 0\n0x400751: push rbp\n0x400752: mov rbp, rsp\n0x400755: je 0x400763\n", "0x400778": "0x400778: repz ret \n"}}

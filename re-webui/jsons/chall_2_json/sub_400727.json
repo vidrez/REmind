@@ -1,0 +1,1 @@
+{"sub_400727_edges": {"edges": []}, "sub_400727_bbs": {"0x400727": "0x400727: nop word ptr [rax + rax]\n0x400730: pop rbp\n0x400731: ret \n"}}

@@ -1,0 +1,1 @@
+{"sub_40061c_edges": {"edges": []}, "sub_40061c_bbs": {"0x40061c": "0x40061c: nop dword ptr [rax]\n0x400620: jmp qword ptr [rip + 0x20098a]\n"}}

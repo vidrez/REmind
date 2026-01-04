@@ -1,0 +1,1 @@
+{"sub_4006ab_edges": {"edges": []}, "sub_4006ab_bbs": {"0x4006ab": "0x4006ab: nop dword ptr [rax + rax]\n0x4006b0: lea rdi, [rip + 0x200959]\n0x4006b7: push rbp\n0x4006b8: lea rax, [rip + 0x200951]\n0x4006bf: cmp rax, rdi\n0x4006c2: mov rbp, rsp\n0x4006c5: je 0x4006e0\n"}}

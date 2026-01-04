@@ -1,0 +1,1 @@
+{"sub_400732_edges": {"edges": []}, "sub_400732_bbs": {"0x400732": "0x400732: nop dword ptr [rax]\n0x400736: nop word ptr cs:[rax + rax]\n0x400740: cmp byte ptr [rip + 0x2008c9], 0\n0x400747: jne 0x400778\n"}}
