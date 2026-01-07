@@ -4,12 +4,11 @@
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center mt-5">
-    <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 450px;">
+    <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 600px; min-width: 500px;">
         <div class="card-body p-4 p-md-5">
             <div>
                 <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                    <small>First time here? Click <strong>Sign up</strong> to generate a token. Please <strong>save
-                            it</strong> for future access.</small>
+                    <small>First time here? Click <strong>Generate ID Token</strong> or Sign in if you already have one.</small>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <!-- Header with Icon -->
@@ -25,23 +24,23 @@
                         </svg>
                     </div>
                     <h3 class="fw-bold">Welcome Back</h3>
-                    <p class="text-body-secondary mb-0">Enter your access token to continue</p>
+                    <p class="text-body-secondary mb-0">Enter your id token to continue</p>
                 </div>
 
                 <form method="POST" action="/auth/login">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <div class="form-floating mb-4">
-                        <input type="password" class="form-control" id="token" name="token" placeholder="Token" required
+                        <input type="text" class="form-control" id="token" name="token" placeholder="Token" required
                             style="border-radius: 0.5rem;">
-                        <label for="token">Access Token</label>
+                        <label for="token">ID Token</label>
                     </div>
 
                     <div class="d-flex align-items-center justify-content-center">
-                        <input type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold shadow-sm w-100"
+                        <input type="submit" id="signin" class="btn btn-outline-primary btn-lg rounded-pill fw-semibold shadow-sm w-100"
                             value="Sign in">
                         <button id="signup"
-                            class="d-none ms-2 btn btn-success btn-lg rounded-pill fw-semibold shadow-sm w-100"
-                            onclick="generateToken()">Sign up</button>
+                            class="ms-2 btn btn-success btn-lg rounded-pill fw-semibold shadow-sm w-100"
+                            onclick="generateToken()">Generate ID Token</button>
                     </div>
                 </form>
             </div>

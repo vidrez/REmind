@@ -17,6 +17,8 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
+        <div class="mt-1" id="at-container"></div>
+
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul class="navbar-nav">
             {% if g.user %}
@@ -37,13 +39,6 @@
     </nav>
 
     <div class="">
-      {% if session['token'] %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          <strong>Subscription Active!</strong> Here is your token: <code class="text-dark bg-light px-2 py-1 rounded ms-2">{{ session['token'] }}</code>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endif %}
-
       {% for message in get_flashed_messages() %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
           {{ message }}
@@ -58,6 +53,8 @@
     </div>
 
     <script src="{{url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    <script type="text/javascript" src="{{ url_for('static', filename='app.js') }}" defer></script>
+    {% endblock %}
   </body>
 </html>

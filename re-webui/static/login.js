@@ -1,8 +1,8 @@
 let token = localStorage.getItem("token");
-if (!token) {
-    console.log(document.getElementById("signup"))
-    document.getElementById("signup").classList.remove("d-none");
-} else {
+if (token) {
+    document.getElementById("signup").setAttribute('disabled', '');
+    document.getElementById("signin").removeAttribute('disabled');
+
     fetch("/auth/token/validate", {
         method: "POST",
         headers: {
@@ -13,9 +13,9 @@ if (!token) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             if (data.valid) {
                 document.getElementById("token").value = token;
+                document.getElementById("at-container").innerHTML = `<span id="token">Your ID Token is <b>${token}</b></span>`;
             } else {
                 generateToken();
             }
@@ -24,6 +24,9 @@ if (!token) {
             console.error("Error validating token:", error);
             generateToken();
         });
+} else {
+    document.getElementById("signin").setAttribute('disabled', '');
+    document.getElementById("signup").removeAttribute('disabled');
 }
 
 let generateToken = () => {
@@ -40,7 +43,9 @@ let generateToken = () => {
             token = data.token;
             localStorage.setItem("token", token);
             document.getElementById("token").value = token;
-            document.getElementById("signup").classList.add("d-none");
+            document.getElementById("at-container").innerHTML = `<span id="token">Your ID Token is <b>${token}</b></span>`;
+            document.getElementById("signup").setAttribute('disabled', '');
+            document.getElementById("signin").removeAttribute('disabled');
         })
         .catch(error => console.error("Error fetching token:", error));
 };
