@@ -1,7 +1,25 @@
+const tokenInput = document.getElementById("token");
+const signupBtn = document.getElementById("signup");
+const signinBtn = document.getElementById("signin");
+
+const updateButtonState = () => {
+    if (tokenInput.value.trim().length > 0) {
+        signupBtn.setAttribute('disabled', '');
+        signinBtn.removeAttribute('disabled');
+    } else {
+        signinBtn.setAttribute('disabled', '');
+        signupBtn.removeAttribute('disabled');
+    }
+};
+
+tokenInput.addEventListener("input", updateButtonState);
+
+
 let token = localStorage.getItem("token");
+
 if (token) {
-    document.getElementById("signup").setAttribute('disabled', '');
-    document.getElementById("signin").removeAttribute('disabled');
+    tokenInput.value = token;
+    updateButtonState();
 
     fetch("/auth/token/validate", {
         method: "POST",
@@ -14,8 +32,8 @@ if (token) {
         .then(response => response.json())
         .then(data => {
             if (data.valid) {
-                document.getElementById("token").value = token;
                 document.getElementById("at-container").innerHTML = `<span id="token">Your ID Token is <b>${token}</b></span>`;
+                updateButtonState();
             } else {
                 generateToken();
             }
@@ -25,12 +43,12 @@ if (token) {
             generateToken();
         });
 } else {
-    document.getElementById("signin").setAttribute('disabled', '');
-    document.getElementById("signup").removeAttribute('disabled');
+    updateButtonState();
 }
 
 let generateToken = () => {
-    document.getElementById("signup").setAttribute('disabled', '');
+    signupBtn.setAttribute('disabled', '');
+
     fetch("/auth/token", {
         method: "POST",
         headers: {
@@ -42,10 +60,10 @@ let generateToken = () => {
         .then(data => {
             token = data.token;
             localStorage.setItem("token", token);
-            document.getElementById("token").value = token;
+
+            tokenInput.value = token;
             document.getElementById("at-container").innerHTML = `<span id="token">Your ID Token is <b>${token}</b></span>`;
-            document.getElementById("signup").setAttribute('disabled', '');
-            document.getElementById("signin").removeAttribute('disabled');
+            updateButtonState();
         })
         .catch(error => console.error("Error fetching token:", error));
 };
